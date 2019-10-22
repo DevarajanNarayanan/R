@@ -1,0 +1,161 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+
+```{r}
+library(MASS)
+data("Boston")
+View(Boston)
+plot(Boston$crim, Boston$medv, cex=0.5, xlab ="Crime rate", ylab="Price")
+```
+
+
+```{r}
+cr<- cor(Boston)
+install.packages("corrplot")
+library(corrplot)
+corrplot(cr, type="lower")
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r}
+set.seed(2)
+install.packages("caTools")
+library(caTools)
+splits<- sample.split(Boston$medv, SplitRatio = 0.7)
+splits
+train <- subset(Boston, split=TRUE)
+test <- subset(Boston, split=FALSE)
+```
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r}
+LR <- lm(medv~., data=train)
+summary(LR)
+```
+```{r}
+preds <- predict(LR, test)
+preds
+```
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+plot(test$medv, type="l", lty=1.8, col="green")
+```
+
+
+```{r}
+plot(test$medv, type="l", lty=1.8, col="green")
+lines(preds, type="l", col="blue")
+```
+
+
+```{r}
+install.packages("car")
+library(car)
+outlierTest(LR)
+qqPlot(LR, main="QQ Plot")
+```
+
+
+```{r}
+setwd("D:\\DS\\R\\Class4\\338_m4_dataset_v3.0")
+diet <- read.csv("Diabetes.csv")
+View(diet)
+```
+
+
+```{r}
+set.seed(4)
+install.packages("caTools")
+library(caTools)
+split <- sample.split(as.numeric(diet$Is_Diabetic), SplitRatio = 0.7)
+train <- subset(diet, split=TRUE)
+test <- subset(diet, split=FALSE)
+```
+
+
+```{r}
+model2 <- glm(Is_Diabetic ~., data=train, family="binomial")
+summary(model2)
+```
+
+
+```{r}
+preds1 <-predict(model2, newdata = test, type="response")
+table(Actualvalues=test$Is_Diabetic, Predictedvalues=preds1>0.3)
+```
+
+
+```{r}
+install.packages("ROCR")
+library(ROCR)
+rocpred <- prediction(preds1, test$Is_Diabetic)
+rocpref <- performance(rocpred, "tpr", "fpr")
+plot(rocpref, col="blue", print.cutoffs.at=seq(0.1, by=0.1), text.adj=c(-0.5, 1), cex=0.9)
+
+```
+
+
+```{r}
+library(rpart)
+model3 <- rpart(Is_Diabetic ~., data=train)
+plot(model3, margin = 0.1)
+```
+
+
+```{r}
+pred_dt <- predict(model3, newdata = test, type="class")
+pred_dt
+```
+
+
+```{r}
+install.packages("randomForest")
+library(randomForest)
+model4 <- randomForest(Is_Diabetic ~., data=train)
+```
+
+
+```{r}
+preds3 <- predict(model4, newdata = test, type = "class")
+install.packages("caret")
+install.packages("e1071")
+library(caret)
+library(e1071)
+confusionMatrix(table(preds3, test$Is_Diabetic))
+```
+
+
+```{r}
+model5 <- naiveBayes(Is_Diabetic ~., data=train)
+preds5 <- predict(model5,newdata = test, type="class")
+preds5
+```
+
+
+```{r}
+confusionMatrix(table(preds5, test$Is_Diabetic))
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
